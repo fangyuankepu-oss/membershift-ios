@@ -309,7 +309,7 @@ enum BusinessHours {
     }
 }
 
-fileprivate enum BookingFormTarget: Identifiable {
+enum BookingFormTarget: Identifiable {
     case newBooking(start: String)
     case edit(BookingRow)
 
