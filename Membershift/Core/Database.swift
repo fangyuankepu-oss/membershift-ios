@@ -12,6 +12,49 @@ enum SQLiteValue {
 /// sqlite3 destructor constant meaning "SQLite makes its own copy".
 private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
 
+/// One result row: column names plus typed values. Accessors coerce
+/// between types so callers don't have to care whether SQLite stored a
+/// number as INTEGER, REAL or TEXT.
+struct DBRow {
+    let columns: [String]
+    private let values: [SQLiteValue]
+
+    init(columns: [String], values: [SQLiteValue]) {
+        self.columns = columns
+        self.values = values
+    }
+
+    func text(_ name: String) -> String {
+        guard let index = columns.firstIndex(of: name) else { return "" }
+        switch values[index] {
+        case .text(let value): return value
+        case .int(let value): return String(value)
+        case .real(let value): return String(value)
+        case .null: return ""
+        }
+    }
+
+    func int(_ name: String) -> Int64 {
+        guard let index = columns.firstIndex(of: name) else { return 0 }
+        switch values[index] {
+        case .int(let value): return value
+        case .real(let value): return Int64(value)
+        case .text(let value): return Int64(value) ?? 0
+        case .null: return 0
+        }
+    }
+
+    func real(_ name: String) -> Double {
+        guard let index = columns.firstIndex(of: name) else { return 0 }
+        switch values[index] {
+        case .real(let value): return value
+        case .int(let value): return Double(value)
+        case .text(let value): return Double(value) ?? 0
+        case .null: return 0
+        }
+    }
+}
+
 /// Thin wrapper over the system libsqlite3 (no third-party dependency).
 ///
 /// Schema is a 1:1 port of Android `DbHelper` (DB_VERSION 4): 14 tables,
@@ -291,6 +334,66 @@ final class Database {
         defer { sqlite3_finalize(stmt) }
         guard sqlite3_step(stmt) == SQLITE_ROW else { return nil }
         return sqlite3_column_int64(stmt, 0)
+    }
+
+    func scalarReal(_ sql: String) -> Double? {
+        var stmt: OpaquePointer?
+        guard sqlite3_prepare_v2(handle, sql, -1, &stmt, nil) == SQLITE_OK,
+              let stmt else { return nil }
+        defer { sqlite3_finalize(stmt) }
+        guard sqlite3_step(stmt) == SQLITE_ROW else { return nil }
+        return sqlite3_column_double(stmt, 0)
+    }
+
+    /// Runs a SELECT and returns every row. Used by the phase-2 pages
+    /// (Dashboard, …) for their aggregate / list queries.
+    func query(_ sql: String, bindings: [SQLiteValue] = []) -> [DBRow] {
+        var stmt: OpaquePointer?
+        guard sqlite3_prepare_v2(handle, sql, -1, &stmt, nil) == SQLITE_OK,
+              let stmt else { return [] }
+        defer { sqlite3_finalize(stmt) }
+        bindValues(stmt, bindings)
+        var rows: [DBRow] = []
+        while sqlite3_step(stmt) == SQLITE_ROW {
+            let count = sqlite3_column_count(stmt)
+            var columns: [String] = []
+            var values: [SQLiteValue] = []
+            for index in 0..<count {
+                if let name = sqlite3_column_name(stmt, index) {
+                    columns.append(String(cString: name))
+                } else {
+                    columns.append("")
+                }
+                switch sqlite3_column_type(stmt, index) {
+                case SQLITE_INTEGER:
+                    values.append(.int(sqlite3_column_int64(stmt, index)))
+                case SQLITE_FLOAT:
+                    values.append(.real(sqlite3_column_double(stmt, index)))
+                case SQLITE_NULL:
+                    values.append(.null)
+                default:
+                    values.append(.text(columnText(stmt, index) ?? ""))
+                }
+            }
+            rows.append(DBRow(columns: columns, values: values))
+        }
+        return rows
+    }
+
+    private func bindValues(_ stmt: OpaquePointer, _ bindings: [SQLiteValue]) {
+        for (index, value) in bindings.enumerated() {
+            let position = Int32(index + 1)
+            switch value {
+            case .null:
+                sqlite3_bind_null(stmt, position)
+            case .int(let value):
+                sqlite3_bind_int64(stmt, position, value)
+            case .real(let value):
+                sqlite3_bind_double(stmt, position, value)
+            case .text(let value):
+                sqlite3_bind_text(stmt, position, value, -1, SQLITE_TRANSIENT)
+            }
+        }
     }
 
     private func keyValue(table: String, key: String, default defaultValue: String) -> String {

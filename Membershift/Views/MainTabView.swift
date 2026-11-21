@@ -17,7 +17,16 @@ struct MainTabView: View {
 
     var body: some View {
         TabView {
-            tabPage(titleKey: "nav_dashboard", icon: "square.grid.2x2", page: "dashboard")
+            NavigationStack {
+                DashboardView()
+                    .navigationTitle(L10n.string("nav_dashboard"))
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button(L10n.string("logout")) { appState.logout() }
+                        }
+                    }
+            }
+            .tabItem { Label(L10n.string("nav_dashboard"), systemImage: "square.grid.2x2") }
             tabPage(titleKey: "nav_stats", icon: "chart.bar.fill", page: "statistics")
             tabPage(titleKey: "nav_members", icon: "person.2.fill", page: "members")
             tabPage(titleKey: "nav_booking", icon: "calendar", page: "booking")
