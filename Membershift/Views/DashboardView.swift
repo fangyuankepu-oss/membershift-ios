@@ -139,18 +139,22 @@ struct DashboardView: View {
                 VStack(spacing: 2) {
                     Text(day.amount > 0 ? "\(Int(day.amount.rounded()))" : "")
                         .font(.caption2)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                         .foregroundColor(.secondary)
                     Rectangle()
                         .fill(Brand.deepGreen)
-                        .frame(width: 14, height: max(3, day.amount / maxValue * 110))
+                        .frame(width: 14, height: max(3, day.amount / maxValue * 90))
                     Text(day.label)
                         .font(.caption2)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                         .foregroundColor(.secondary)
                 }
                 .frame(maxWidth: .infinity)
             }
         }
-        .frame(height: 150)
+        .frame(height: 160)
     }
 
     private var topCard: some View {
@@ -223,9 +227,12 @@ struct DashboardView: View {
                             .foregroundColor(.secondary)
                         Text("\(tx.typeName) · \(tx.memberName)")
                             .lineLimit(1)
+                            .minimumScaleFactor(0.85)
                         Spacer()
                         Text(tx.rightText)
                             .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                            .layoutPriority(1)
                     }
                     .padding(.vertical, 4)
                 }
@@ -342,7 +349,7 @@ struct DashboardData {
         for offset in (0...13).reversed() {
             let day = AppDates.addDays(today, -offset)
             let amount = sumTx(day, day)
-            dailySales.append((label: String(day.dropFirst(5)), amount: amount))
+            dailySales.append((label: String(day.suffix(2)), amount: amount))
             dailySalesTotal += amount
         }
 
@@ -393,8 +400,10 @@ struct DashboardData {
                     ? (memberNames[memberId] ?? L10n.string("dash_tx_guest"))
                     : L10n.string("dash_tx_guest")
                 let createdAt = row.text("created_at")
-                let timeLabel = createdAt.count >= 16
-                    ? String(createdAt.dropFirst(5).prefix(11))
+                // Date only ("11-18"): the time made the row too wide
+                // and squeezed the name and the amount into "...".
+                let timeLabel = createdAt.count >= 10
+                    ? String(createdAt.prefix(10).dropFirst(5))
                     : createdAt
                 let amount = row.real("amount")
                 let pointsChange = row.int("points_change")

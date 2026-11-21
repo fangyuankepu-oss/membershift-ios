@@ -58,6 +58,11 @@ struct StatisticsView: View {
                 dailyCard
             }
             .padding(16)
+            // Lock the page width to the screen: the daily table below
+            // is wider than its card, and without this it stretches
+            // the whole page past the screen edges (swallowing the
+            // padding) on a 390pt screen.
+            .containerRelativeFrame(.horizontal)
         }
         .background(Color(.systemGroupedBackground))
         .onAppear { reload() }
@@ -91,6 +96,7 @@ struct StatisticsView: View {
                 }
                 .font(.subheadline)
                 .lineLimit(1)
+                .minimumScaleFactor(0.8)
                 .frame(maxWidth: .infinity)
                 .frame(height: 48)
                 .background(index == rangeMode ? Brand.deepGreen : Color(.systemBackground))
@@ -230,7 +236,7 @@ struct StatisticsView: View {
                                  width: CGFloat(max(4, 18 - data.daily.count / 4)))
                     }
                 }
-                .frame(height: 150)
+                .frame(height: 160)
             } else {
                 Text(L10n.string("stats_empty"))
                     .foregroundColor(.secondary)
@@ -245,12 +251,16 @@ struct StatisticsView: View {
         VStack(spacing: 2) {
             Text(amount > 0 ? "\(Int(amount.rounded()))" : "")
                 .font(.caption2)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
                 .foregroundColor(.secondary)
             Rectangle()
                 .fill(Brand.deepGreen)
-                .frame(width: width, height: max(3, amount / maxValue * 110))
+                .frame(width: width, height: max(3, amount / maxValue * 90))
             Text(showLabel ? label : "")
                 .font(.caption2)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
                 .foregroundColor(.secondary)
         }
         .frame(maxWidth: .infinity)
@@ -363,13 +373,13 @@ struct StatisticsView: View {
 
     private var dailyHeader: some View {
         HStack(spacing: 0) {
-            dailyHeaderCell(0, key: "stats_daily_col_date", width: 64, align: .leading)
-            dailyHeaderCell(1, key: "stats_daily_col_new", width: 44, align: .trailing)
-            dailyHeaderCell(2, key: "stats_daily_col_sales", width: 64, align: .trailing)
-            dailyHeaderCell(3, key: "stats_daily_col_recharge", width: 64, align: .trailing)
-            dailyHeaderCell(4, key: "stats_daily_col_issued", width: 48, align: .trailing)
-            dailyHeaderCell(5, key: "stats_daily_col_redeemed", width: 48, align: .trailing)
-            dailyHeaderCell(6, key: "stats_daily_col_active", width: 44, align: .trailing)
+            dailyHeaderCell(0, key: "stats_daily_col_date", width: 56, align: .leading)
+            dailyHeaderCell(1, key: "stats_daily_col_new", width: 36, align: .trailing)
+            dailyHeaderCell(2, key: "stats_daily_col_sales", width: 56, align: .trailing)
+            dailyHeaderCell(3, key: "stats_daily_col_recharge", width: 56, align: .trailing)
+            dailyHeaderCell(4, key: "stats_daily_col_issued", width: 40, align: .trailing)
+            dailyHeaderCell(5, key: "stats_daily_col_redeemed", width: 40, align: .trailing)
+            dailyHeaderCell(6, key: "stats_daily_col_active", width: 36, align: .trailing)
         }
         .padding(.vertical, 6)
     }
@@ -387,6 +397,8 @@ struct StatisticsView: View {
             Text(L10n.string(key)
                  + (col == dailySortCol ? (dailySortAsc ? " ▲" : " ▼") : ""))
                 .font(.caption)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
                 .bold(col == dailySortCol)
                 .foregroundColor(col == dailySortCol ? Brand.deepGreen : .secondary)
                 .frame(width: width, alignment: align)
@@ -397,19 +409,19 @@ struct StatisticsView: View {
     private func dailyRow(_ row: StatsDailyRow) -> some View {
         HStack(spacing: 0) {
             Text(String(row.day.dropFirst(5)))
-                .font(.caption).frame(width: 64, alignment: .leading)
+                .font(.caption).frame(width: 56, alignment: .leading)
             Text("\(row.newMembers)")
-                .font(.caption).frame(width: 44, alignment: .trailing)
+                .font(.caption).frame(width: 36, alignment: .trailing)
             Text("\(Int(row.sales.rounded()))")
-                .font(.caption).frame(width: 64, alignment: .trailing)
+                .font(.caption).frame(width: 56, alignment: .trailing)
             Text("\(Int(row.recharge.rounded()))")
-                .font(.caption).frame(width: 64, alignment: .trailing)
+                .font(.caption).frame(width: 56, alignment: .trailing)
             Text("\(row.issued)")
-                .font(.caption).frame(width: 48, alignment: .trailing)
+                .font(.caption).frame(width: 40, alignment: .trailing)
             Text("\(row.redeemed)")
-                .font(.caption).frame(width: 48, alignment: .trailing)
+                .font(.caption).frame(width: 40, alignment: .trailing)
             Text("\(row.active)")
-                .font(.caption).frame(width: 44, alignment: .trailing)
+                .font(.caption).frame(width: 36, alignment: .trailing)
         }
         .padding(.vertical, 6)
     }
@@ -610,7 +622,7 @@ struct StatsData {
         }
         for day in AppDates.daysInRange(start, end) {
             let amount = dailySalesByDay[day] ?? 0
-            daily.append((label: String(day.dropFirst(5)), amount: amount))
+            daily.append((label: String(day.suffix(2)), amount: amount))
             dailyTotal += amount
         }
 

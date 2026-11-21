@@ -160,12 +160,12 @@ enum L10n {
             .en: "No points expire in the next 30 days",
         ],
         "dash_expiring_fmt": [
-            .zhHans: "%1$d 位会员 · %2$d 分将过期（最近 %3$@）",
-            .en: "%1$d members · %2$d points expiring (soonest %3$@)",
+            .zhHans: "%1$d 位会员 · %2$d 分将过期\n最近到期：%3$@",
+            .en: "%1$d members · %2$d points expiring\nSoonest expiry: %3$@",
         ],
         "dash_expiring_one": [
-            .zhHans: "%1$d 位会员 · %2$d 分将过期（最近 %3$@）",
-            .en: "%1$d member · %2$d points expiring (soonest %3$@)",
+            .zhHans: "%1$d 位会员 · %2$d 分将过期\n最近到期：%3$@",
+            .en: "%1$d member · %2$d points expiring\nSoonest expiry: %3$@",
         ],
         "dash_chart_title": [
             .zhHans: "近 14 天营业额",
