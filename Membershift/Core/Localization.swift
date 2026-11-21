@@ -1,0 +1,143 @@
+import Foundation
+
+/// App language. Skeleton ships Simplified Chinese (default) + English.
+/// Android ships 7 languages; the remaining 5 (繁體中文 / Français /
+/// Español / Italiano / فارسی) are a phase-2 addition — the table below
+/// is the only place that needs new columns.
+enum AppLanguage: String, CaseIterable {
+    case zhHans = "zh-Hans"
+    case en
+
+    var displayName: String {
+        switch self {
+        case .zhHans: return "简体中文"
+        case .en: return "English"
+        }
+    }
+}
+
+enum L10n {
+    private static let userDefaultsKey = "ms_lang"
+
+    static var current: AppLanguage {
+        get {
+            guard let raw = UserDefaults.standard.string(forKey: userDefaultsKey),
+                  let lang = AppLanguage(rawValue: raw) else { return .zhHans }
+            return lang
+        }
+        set { UserDefaults.standard.set(newValue.rawValue, forKey: userDefaultsKey) }
+    }
+
+    /// Looks up `key` in the current language, falling back to Chinese,
+    /// then to the key itself (never crashes on a missing key).
+    static func string(_ key: String) -> String {
+        strings[key]?[current] ?? strings[key]?[.zhHans] ?? key
+    }
+
+    private static let strings: [String: [AppLanguage: String]] = [
+        "app_name": [
+            .zhHans: "Membershift",
+            .en: "Membershift",
+        ],
+        "login_title": [
+            .zhHans: "会员积分系统",
+            .en: "Membership Points System",
+        ],
+        "login_username": [
+            .zhHans: "用户名",
+            .en: "Username",
+        ],
+        "login_password": [
+            .zhHans: "密码",
+            .en: "Password",
+        ],
+        "login_button": [
+            .zhHans: "登录",
+            .en: "Log in",
+        ],
+        "login_error": [
+            .zhHans: "用户名或密码错误",
+            .en: "Wrong username or password",
+        ],
+        "login_hint": [
+            .zhHans: "默认账号 admin / 123456，登录后请在设置中修改",
+            .en: "Default account admin / 123456 — please change it in Settings after logging in",
+        ],
+        "login_language": [
+            .zhHans: "语言",
+            .en: "Language",
+        ],
+        "logout": [
+            .zhHans: "退出登录",
+            .en: "Log out",
+        ],
+        "db_error": [
+            .zhHans: "数据库打开失败",
+            .en: "Failed to open database",
+        ],
+        "nav_dashboard": [
+            .zhHans: "仪表盘",
+            .en: "Dashboard",
+        ],
+        "nav_stats": [
+            .zhHans: "数据统计",
+            .en: "Statistics",
+        ],
+        "nav_members": [
+            .zhHans: "会员管理",
+            .en: "Members",
+        ],
+        "nav_booking": [
+            .zhHans: "预约",
+            .en: "Booking",
+        ],
+        "nav_recharge": [
+            .zhHans: "充值扣减",
+            .en: "Recharge & Deduct",
+        ],
+        "nav_gifts": [
+            .zhHans: "礼品兑换",
+            .en: "Gifts",
+        ],
+        "nav_coupons": [
+            .zhHans: "优惠券",
+            .en: "Coupons",
+        ],
+        "nav_transactions": [
+            .zhHans: "交易流水",
+            .en: "Transactions",
+        ],
+        "nav_settings": [
+            .zhHans: "系统设置",
+            .en: "Settings",
+        ],
+        "page_wip": [
+            .zhHans: "开发中",
+            .en: "Coming soon",
+        ],
+        "page_wip_detail": [
+            .zhHans: "该页面为骨架占位，第一阶段只验证导航与登录，功能在后续阶段接入。",
+            .en: "This page is a skeleton placeholder. Phase 1 only verifies navigation and login; features arrive in later phases.",
+        ],
+        "lic_wall_title": [
+            .zhHans: "免费试用已到期",
+            .en: "Free trial expired",
+        ],
+        "lic_wall_body": [
+            .zhHans: "输入激活码即可继续使用，您的全部数据都完好保留。",
+            .en: "Enter your activation code to continue. All your data is kept.",
+        ],
+        "lic_wall_code_placeholder": [
+            .zhHans: "输入激活码",
+            .en: "Enter activation code",
+        ],
+        "lic_wall_activate": [
+            .zhHans: "激活",
+            .en: "Activate",
+        ],
+        "lic_wall_note": [
+            .zhHans: "激活码验证尚未接入（第一阶段占位）。",
+            .en: "Activation-code verification is not wired up yet (phase 1 placeholder).",
+        ],
+    ]
+}

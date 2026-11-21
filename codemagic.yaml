@@ -1,0 +1,52 @@
+# Membershift iOS — Codemagic build (unsigned .ipa for AltStore).
+#
+# Workflow: builds the Xcode project WITHOUT code signing and packages
+# the resulting .app into an unsigned .ipa. The user re-signs that .ipa
+# with AltStore using their free Apple ID (7-day certificate, re-sign
+# weekly). No Apple credentials, certificates, or signing material are
+# used or stored anywhere in this workflow.
+#
+# Codemagic docs: https://docs.codemagic.io/yaml-basic-configuration/yaml-getting-started/
+# Xcode version pinned to 26.2 (Codemagic default, verified 2026-11-21;
+# 26.3 also available). mac_mini_m2 is the standard Apple-silicon
+# instance on the free tier (500 build minutes/month, build-time only).
+# mac_mini_m4 needs billing enabled — not used here.
+
+workflows:
+  ios-unsigned:
+    name: iOS unsigned (AltStore)
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    environment:
+      xcode: 26.2
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'main'
+          include: true
+    scripts:
+      - name: Build unsigned app
+        script: |
+          set -e
+          xcodebuild -project Membershift.xcodeproj \
+            -scheme Membershift \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath "$CM_BUILD_DIR/derived-data" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            clean build
+      - name: Package unsigned IPA
+        script: |
+          set -e
+          APP_PATH="$CM_BUILD_DIR/derived-data/Build/Products/Release-iphoneos/Membershift.app"
+          test -d "$APP_PATH" || { echo "ERROR: .app not found at $APP_PATH"; exit 1; }
+          rm -rf Payload Membershift-unsigned.ipa
+          mkdir -p Payload
+          cp -R "$APP_PATH" Payload/
+          zip -r -y Membershift-unsigned.ipa Payload
+          ls -lh Membershift-unsigned.ipa
+    artifacts:
+      - Membershift-unsigned.ipa
