@@ -668,6 +668,11 @@ struct MemberDetailView: View {
         tags = MemberStore.getMemberTags(db: db, memberId: memberId)
     }
 
+    // Split into one small function per card: the previous single
+    // VStack held 8 cards + nested ternaries + ForEach loops and Xcode
+    // 26.2 refused to type-check it ("unable to type-check this
+    // expression in reasonable time", build #4). Each card below is
+    // type-checked on its own; the visible UI is unchanged.
     private func detailContent(_ m: MemberRow) -> some View {
         let db = Database.shared
         let tiers = MemberStore.loadTiers(db: db)
@@ -686,220 +691,291 @@ struct MemberDetailView: View {
         let prefProducts = MemberStore.prefAggregate(db: db, memberId: m.id, limit: 3, byCategory: false)
 
         return VStack(spacing: 12) {
-            detailCard {
-                HStack(spacing: 12) {
-                    Text(m.name.isEmpty ? "?" : String(m.name.prefix(1)))
-                        .font(.title)
-                        .bold()
-                        .foregroundColor(.white)
-                        .frame(width: 56, height: 56)
-                        .background(Brand.deepGreen)
-                        .clipShape(Circle())
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack(spacing: 6) {
-                            Text(m.name)
-                                .font(.title3)
-                                .bold()
-                            if let tier {
-                                Text(tier.name)
-                                    .font(.caption)
-                                    .bold()
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 3)
-                                    .background(Color(hex: tier.color))
-                                    .cornerRadius(8)
-                            }
-                        }
-                        if let tier {
-                            let discount = MemberStore.discountText(tier.discount)
-                            Text(tier.name + " · "
-                                 + (discount == nil
-                                    ? L10n.string("mem_discount_none")
-                                    : String(format: L10n.string("mem_discount_fmt"), discount!))
-                                 + " · " + String(format: L10n.string("mem_multiplier_fmt"),
-                                                  tier.multiplier == floor(tier.multiplier)
-                                                    ? String(format: "%.0f", tier.multiplier)
-                                                    : String(format: "%.1f", tier.multiplier)))
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-                        Text(m.phone)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    Spacer()
-                }
-                // Tier progress.
-                if let next {
-                    let span = next.minSpent - (tier?.minSpent ?? 0)
-                    let progress = span > 0
-                        ? max(0, min(1, (m.totalSpent - (tier?.minSpent ?? 0)) / span)) : 1
-                    ProgressView(value: progress)
-                        .tint(Brand.deepGreen)
-                    Text(String(format: L10n.string("mem_tier_progress"), next.name,
-                                DashboardData.moneyTrim(next.minSpent - m.totalSpent,
-                                                        currency: currency)))
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                } else {
-                    Text(L10n.string("mem_tier_top"))
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                // Expiring points.
-                Text(expiring.points > 0
-                     ? String(format: L10n.string("mem_expiring_points"),
-                              Int(expiring.points), expiring.nearestDate)
-                     : L10n.string("mem_no_expiring"))
-                    .font(.subheadline)
-                    .foregroundColor(expiring.points > 0 ? .red : .secondary)
-            }
+            detailHeaderCard(m, tier: tier, next: next, expiring: expiring)
+            detailStatsCard(m, visits: visits, avg: avg)
+            detailInfoCard(m)
+            detailPrefCard(prefCats: prefCats, prefProducts: prefProducts)
+            detailTagsCard(m)
+            detailReferralCard(m, referrerName: referrerName, referred: referred)
+            detailCouponsCard(coupons: coupons)
+            detailTxCard(txs: txs)
+            detailActionButtons()
+        }
+        .padding(16)
+    }
 
-            detailCard {
-                detailRow(labelKey: "mem_total_spent_label",
-                          value: DashboardData.moneyTrim(m.totalSpent, currency: currency))
-                detailRow(labelKey: "mem_points_label",
-                          value: String(format: L10n.string("mem_points_fmt"), Int(m.points)))
-                detailRow(labelKey: "mem_balance_label",
-                          value: DashboardData.moneyTrim(m.balance, currency: currency))
-                Text(String(format: L10n.string("mem_visits"), Int(visits))
-                     + " · " + String(format: L10n.string("mem_avg_order"),
-                                      DashboardData.moneyTrim(avg, currency: currency)))
+    private func detailHeaderCard(_ m: MemberRow, tier: MemberTier?,
+                                  next: MemberTier?,
+                                  expiring: (points: Int64, nearestDate: String)) -> some View {
+        detailCard {
+            headerIdentity(m, tier: tier)
+            headerTierProgress(m, tier: tier, next: next)
+            headerExpiring(expiring: expiring)
+        }
+    }
+
+    private func headerIdentity(_ m: MemberRow, tier: MemberTier?) -> some View {
+        HStack(spacing: 12) {
+            Text(m.name.isEmpty ? "?" : String(m.name.prefix(1)))
+                .font(.title)
+                .bold()
+                .foregroundColor(.white)
+                .frame(width: 56, height: 56)
+                .background(Brand.deepGreen)
+                .clipShape(Circle())
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 6) {
+                    Text(m.name)
+                        .font(.title3)
+                        .bold()
+                    if let tier {
+                        Text(tier.name)
+                            .font(.caption)
+                            .bold()
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(Color(hex: tier.color))
+                            .cornerRadius(8)
+                    }
+                }
+                if let tier {
+                    Text(tierLine(tier))
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+                Text(m.phone)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
+            Spacer()
+        }
+    }
 
-            detailCard {
-                detailRow(labelKey: "mem_gender_label", value: genderName(m.gender))
-                detailRow(labelKey: "mem_birthday_label",
-                          value: m.birthday.isEmpty ? L10n.string("mem_birthday_none") : m.birthday)
-                if !m.email.isEmpty {
-                    detailRow(labelKey: "mem_email", value: m.email)
+    /// Tier line as a plain string ("金卡 · 9.5 折 · 2x 积分"), kept out
+    /// of the view expression so the nested ternary stays in plain Swift.
+    private func tierLine(_ tier: MemberTier) -> String {
+        let discount = MemberStore.discountText(tier.discount)
+        let discountPart = discount == nil
+            ? L10n.string("mem_discount_none")
+            : String(format: L10n.string("mem_discount_fmt"), discount!)
+        let mult = tier.multiplier == floor(tier.multiplier)
+            ? String(format: "%.0f", tier.multiplier)
+            : String(format: "%.1f", tier.multiplier)
+        return tier.name + " · " + discountPart + " · "
+            + String(format: L10n.string("mem_multiplier_fmt"), mult)
+    }
+
+    private func headerTierProgress(_ m: MemberRow, tier: MemberTier?,
+                                    next: MemberTier?) -> some View {
+        Group {
+            if let next {
+                ProgressView(value: tierProgressValue(m, tier: tier, next: next))
+                    .tint(Brand.deepGreen)
+                Text(String(format: L10n.string("mem_tier_progress"), next.name,
+                            DashboardData.moneyTrim(next.minSpent - m.totalSpent,
+                                                    currency: currency)))
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            } else {
+                Text(L10n.string("mem_tier_top"))
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+        }
+    }
+
+    private func tierProgressValue(_ m: MemberRow, tier: MemberTier?,
+                                   next: MemberTier) -> Double {
+        let span = next.minSpent - (tier?.minSpent ?? 0)
+        guard span > 0 else { return 1 }
+        return max(0, min(1, (m.totalSpent - (tier?.minSpent ?? 0)) / span))
+    }
+
+    private func headerExpiring(expiring: (points: Int64, nearestDate: String)) -> some View {
+        Text(expiring.points > 0
+             ? String(format: L10n.string("mem_expiring_points"),
+                      Int(expiring.points), expiring.nearestDate)
+             : L10n.string("mem_no_expiring"))
+            .font(.subheadline)
+            .foregroundColor(expiring.points > 0 ? .red : .secondary)
+    }
+
+    private func detailStatsCard(_ m: MemberRow, visits: Int64, avg: Double) -> some View {
+        detailCard {
+            detailRow(labelKey: "mem_total_spent_label",
+                      value: DashboardData.moneyTrim(m.totalSpent, currency: currency))
+            detailRow(labelKey: "mem_points_label",
+                      value: String(format: L10n.string("mem_points_fmt"), Int(m.points)))
+            detailRow(labelKey: "mem_balance_label",
+                      value: DashboardData.moneyTrim(m.balance, currency: currency))
+            Text(String(format: L10n.string("mem_visits"), Int(visits))
+                 + " · " + String(format: L10n.string("mem_avg_order"),
+                                  DashboardData.moneyTrim(avg, currency: currency)))
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+    }
+
+    private func detailInfoCard(_ m: MemberRow) -> some View {
+        detailCard {
+            detailRow(labelKey: "mem_gender_label", value: genderName(m.gender))
+            detailRow(labelKey: "mem_birthday_label",
+                      value: m.birthday.isEmpty ? L10n.string("mem_birthday_none") : m.birthday)
+            if !m.email.isEmpty {
+                detailRow(labelKey: "mem_email", value: m.email)
+            }
+            detailRow(labelKey: "mem_pin",
+                      value: m.pinHash.isEmpty
+                        ? L10n.string("mem_pin_unset") : L10n.string("mem_pin_set"))
+            detailRow(labelKey: "mem_note_label",
+                      value: m.note.isEmpty ? L10n.string("mem_referrer_none") : m.note)
+        }
+    }
+
+    private func detailPrefCard(prefCats: [(name: String, amount: Double)],
+                                prefProducts: [(name: String, amount: Double)]) -> some View {
+        detailCard {
+            detailRow(labelKey: "mem_pref_cat", value: prefText(prefCats))
+            detailRow(labelKey: "mem_pref_product", value: prefText(prefProducts))
+        }
+    }
+
+    private func prefText(_ prefs: [(name: String, amount: Double)]) -> String {
+        guard !prefs.isEmpty else { return L10n.string("mem_referrer_none") }
+        return prefs.map { "\($0.name) \(DashboardData.moneyTrim($0.amount, currency: currency))" }
+            .joined(separator: " · ")
+    }
+
+    private func detailTagsCard(_ m: MemberRow) -> some View {
+        detailCard {
+            Text(L10n.string("mem_tags"))
+                .font(.headline)
+            if tags.isEmpty {
+                Text(L10n.string("mem_no_tags"))
+                    .foregroundColor(.secondary)
+            } else {
+                FlowChips(tags: tags) { tag in
+                    _ = MemberStore.removeTag(db: Database.shared, memberId: m.id, tag: tag)
+                    reload()
+                    onChanged()
                 }
-                detailRow(labelKey: "mem_pin",
-                          value: m.pinHash.isEmpty
-                            ? L10n.string("mem_pin_unset") : L10n.string("mem_pin_set"))
-                detailRow(labelKey: "mem_note_label",
-                          value: m.note.isEmpty ? L10n.string("mem_referrer_none") : m.note)
             }
-
-            detailCard {
-                detailRow(labelKey: "mem_pref_cat",
-                          value: prefCats.isEmpty ? L10n.string("mem_referrer_none")
-                            : prefCats.map { "\($0.name) \(DashboardData.moneyTrim($0.amount, currency: currency))" }
-                                .joined(separator: " · "))
-                detailRow(labelKey: "mem_pref_product",
-                          value: prefProducts.isEmpty ? L10n.string("mem_referrer_none")
-                            : prefProducts.map { "\($0.name) \(DashboardData.moneyTrim($0.amount, currency: currency))" }
-                                .joined(separator: " · "))
-            }
-
-            detailCard {
-                Text(L10n.string("mem_tags"))
-                    .font(.headline)
-                if tags.isEmpty {
-                    Text(L10n.string("mem_no_tags"))
-                        .foregroundColor(.secondary)
-                } else {
-                    FlowChips(tags: tags) { tag in
-                        _ = MemberStore.removeTag(db: Database.shared, memberId: m.id, tag: tag)
+            HStack(spacing: 8) {
+                TextField(L10n.string("mem_tag_hint"), text: $newTag)
+                    .textFieldStyle(.roundedBorder)
+                Button(L10n.string("mem_add_tag")) {
+                    if MemberStore.addTag(db: Database.shared, memberId: m.id, tag: newTag) {
+                        newTag = ""
                         reload()
                         onChanged()
                     }
                 }
-                HStack(spacing: 8) {
-                    TextField(L10n.string("mem_tag_hint"), text: $newTag)
-                        .textFieldStyle(.roundedBorder)
-                    Button(L10n.string("mem_add_tag")) {
-                        if MemberStore.addTag(db: Database.shared, memberId: m.id, tag: newTag) {
-                            newTag = ""
-                            reload()
-                            onChanged()
-                        }
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(Brand.deepGreen)
-                    .disabled(newTag.trimmingCharacters(in: .whitespaces).isEmpty)
-                }
+                .buttonStyle(.bordered)
+                .tint(Brand.deepGreen)
+                .disabled(newTag.trimmingCharacters(in: .whitespaces).isEmpty)
             }
+        }
+    }
 
-            detailCard {
-                Text(String(format: L10n.string("mem_referrer_info"),
-                            referrerName.isEmpty ? L10n.string("mem_referrer_none") : referrerName)
-                     + " · " + String(format: L10n.string("mem_referred_count"), Int(referred))
-                     + " · " + (m.referralRewarded == 1
-                                ? L10n.string("mem_reward_done")
-                                : L10n.string("mem_reward_pending")))
-                    .font(.subheadline)
-            }
+    private func detailReferralCard(_ m: MemberRow, referrerName: String,
+                                    referred: Int64) -> some View {
+        detailCard {
+            Text(referralText(m, referrerName: referrerName, referred: referred))
+                .font(.subheadline)
+        }
+    }
 
-            detailCard {
-                Text(L10n.string("mem_coupons"))
-                    .font(.headline)
-                if coupons.isEmpty {
-                    Text(L10n.string("mem_no_coupons"))
-                        .foregroundColor(.secondary)
-                } else {
-                    ForEach(coupons.indices, id: \.self) { index in
-                        let coupon = coupons[index]
-                        let today = AppDates.today()
-                        let statusKey: String
-                        if coupon.status == "used" {
-                            statusKey = "mem_coupon_used"
-                        } else if !coupon.expiresAt.isEmpty
-                                    && String(coupon.expiresAt.prefix(10)) < today {
-                            statusKey = "mem_coupon_expired"
-                        } else {
-                            statusKey = "mem_coupon_unused"
-                        }
-                        let expDate = coupon.expiresAt.count >= 10
-                            ? String(coupon.expiresAt.prefix(10)) : coupon.expiresAt
-                        Text(String(format: L10n.string("mem_coupon_fmt"),
-                                    coupon.name, L10n.string(statusKey), expDate))
-                            .font(.subheadline)
-                            .padding(.vertical, 2)
-                    }
-                }
-            }
+    private func referralText(_ m: MemberRow, referrerName: String,
+                              referred: Int64) -> String {
+        String(format: L10n.string("mem_referrer_info"),
+               referrerName.isEmpty ? L10n.string("mem_referrer_none") : referrerName)
+        + " · " + String(format: L10n.string("mem_referred_count"), Int(referred))
+        + " · " + (m.referralRewarded == 1
+                   ? L10n.string("mem_reward_done")
+                   : L10n.string("mem_reward_pending"))
+    }
 
-            detailCard {
-                Text(L10n.string("mem_recent_tx"))
-                    .font(.headline)
-                if txs.isEmpty {
-                    Text(L10n.string("mem_no_tx"))
-                        .foregroundColor(.secondary)
-                } else {
-                    ForEach(txs.indices, id: \.self) { index in
-                        let tx = txs[index]
-                        HStack(spacing: 8) {
-                            Text(tx.timeLabel + " " + tx.typeName)
-                                .lineLimit(1)
-                            Spacer()
-                            Text(tx.rightText)
-                                .lineLimit(1)
-                        }
-                        .font(.subheadline)
-                        .padding(.vertical, 2)
-                    }
-                }
-            }
-
-            HStack(spacing: 12) {
-                Button(L10n.string("mem_edit")) { showingForm = true }
-                    .buttonStyle(.borderedProminent)
-                    .tint(Brand.deepGreen)
-                    .frame(maxWidth: .infinity)
-                if isManager {
-                    Button(L10n.string("mem_delete")) { showingDeleteConfirm = true }
-                        .buttonStyle(.bordered)
-                        .tint(.red)
-                        .frame(maxWidth: .infinity)
+    private func detailCouponsCard(coupons: [MemberStore.MemberCouponRow]) -> some View {
+        detailCard {
+            Text(L10n.string("mem_coupons"))
+                .font(.headline)
+            if coupons.isEmpty {
+                Text(L10n.string("mem_no_coupons"))
+                    .foregroundColor(.secondary)
+            } else {
+                ForEach(coupons.indices, id: \.self) { index in
+                    couponRow(coupons[index])
                 }
             }
         }
-        .padding(16)
     }
+
+    private func couponRow(_ coupon: MemberStore.MemberCouponRow) -> some View {
+        Text(couponText(coupon))
+            .font(.subheadline)
+            .padding(.vertical, 2)
+    }
+
+    private func couponText(_ coupon: MemberStore.MemberCouponRow) -> String {
+        let today = AppDates.today()
+        let statusKey: String
+        if coupon.status == "used" {
+            statusKey = "mem_coupon_used"
+        } else if !coupon.expiresAt.isEmpty
+                    && String(coupon.expiresAt.prefix(10)) < today {
+            statusKey = "mem_coupon_expired"
+        } else {
+            statusKey = "mem_coupon_unused"
+        }
+        let expDate = coupon.expiresAt.count >= 10
+            ? String(coupon.expiresAt.prefix(10)) : coupon.expiresAt
+        return String(format: L10n.string("mem_coupon_fmt"),
+                      coupon.name, L10n.string(statusKey), expDate)
+    }
+
+    private func detailTxCard(txs: [MemberStore.MemberTxRow]) -> some View {
+        detailCard {
+            Text(L10n.string("mem_recent_tx"))
+                .font(.headline)
+            if txs.isEmpty {
+                Text(L10n.string("mem_no_tx"))
+                    .foregroundColor(.secondary)
+            } else {
+                ForEach(txs.indices, id: \.self) { index in
+                    txRow(txs[index])
+                }
+            }
+        }
+    }
+
+    private func txRow(_ tx: MemberStore.MemberTxRow) -> some View {
+        HStack(spacing: 8) {
+            Text(tx.timeLabel + " " + tx.typeName)
+                .lineLimit(1)
+            Spacer()
+            Text(tx.rightText)
+                .lineLimit(1)
+        }
+        .font(.subheadline)
+        .padding(.vertical, 2)
+    }
+
+    private func detailActionButtons() -> some View {
+        HStack(spacing: 12) {
+            Button(L10n.string("mem_edit")) { showingForm = true }
+                .buttonStyle(.borderedProminent)
+                .tint(Brand.deepGreen)
+                .frame(maxWidth: .infinity)
+            if isManager {
+                Button(L10n.string("mem_delete")) { showingDeleteConfirm = true }
+                    .buttonStyle(.bordered)
+                    .tint(.red)
+                    .frame(maxWidth: .infinity)
+            }
+        }
+    }
+
 
     private func detailCard<Content: View>(@ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -1001,56 +1077,12 @@ struct MemberFormView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section {
-                    TextField(L10n.string("mem_name"), text: $name)
-                    TextField(L10n.string("mem_phone"), text: $phone)
-                        .keyboardType(.phonePad)
-                    TextField(L10n.string("mem_email"), text: $email)
-                        .keyboardType(.emailAddress)
-                        .textInputAutocapitalization(.never)
-                        .disableAutocorrection(true)
-                }
-                Section(L10n.string("mem_pin")) {
-                    SecureField(member == nil
-                                ? L10n.string("mem_pin_hint")
-                                : L10n.string("mem_pin_hint_edit"), text: $pin)
-                        .keyboardType(.numberPad)
-                    if let member, !member.pinHash.isEmpty {
-                        Toggle(L10n.string("mem_pin_clear"), isOn: $clearPin)
-                    }
-                }
-                Section(L10n.string("mem_gender")) {
-                    Picker(L10n.string("mem_gender"), selection: $genderIndex) {
-                        Text(L10n.string("mem_gender_secret")).tag(0)
-                        Text(L10n.string("mem_gender_male")).tag(1)
-                        Text(L10n.string("mem_gender_female")).tag(2)
-                    }
-                    .pickerStyle(.segmented)
-                }
-                Section(L10n.string("mem_birthday")) {
-                    Toggle(L10n.string("mem_birthday"), isOn: $hasBirthday)
-                    if hasBirthday {
-                        DatePicker(L10n.string("mem_birthday"), selection: $birthday,
-                                   displayedComponents: .date)
-                            .datePickerStyle(.compact)
-                    }
-                }
-                Section(L10n.string("mem_referrer")) {
-                    Button {
-                        showingReferrerPicker = true
-                    } label: {
-                        HStack {
-                            Text(referrerLabel)
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                }
-                Section(L10n.string("mem_note")) {
-                    TextField(L10n.string("mem_note"), text: $note)
-                }
+                formIdentitySection
+                formPinSection
+                formGenderSection
+                formBirthdaySection
+                formReferrerSection
+                formNoteSection
                 if !error.isEmpty {
                     Text(error)
                         .foregroundColor(.red)
@@ -1072,6 +1104,77 @@ struct MemberFormView: View {
                     candidates: allMembers.filter { $0.id != (member?.id ?? -1) },
                     selectedId: $referrerId)
             }
+        }
+    }
+
+    // One computed var per Form section: the previous single Form
+    // body was the second-largest single view expression in this file
+    // (same failure class as detailContent, build #4).
+    private var formIdentitySection: some View {
+        Section {
+            TextField(L10n.string("mem_name"), text: $name)
+            TextField(L10n.string("mem_phone"), text: $phone)
+                .keyboardType(.phonePad)
+            TextField(L10n.string("mem_email"), text: $email)
+                .keyboardType(.emailAddress)
+                .textInputAutocapitalization(.never)
+                .disableAutocorrection(true)
+        }
+    }
+
+    private var formPinSection: some View {
+        Section(L10n.string("mem_pin")) {
+            SecureField(member == nil
+                        ? L10n.string("mem_pin_hint")
+                        : L10n.string("mem_pin_hint_edit"), text: $pin)
+                .keyboardType(.numberPad)
+            if let member, !member.pinHash.isEmpty {
+                Toggle(L10n.string("mem_pin_clear"), isOn: $clearPin)
+            }
+        }
+    }
+
+    private var formGenderSection: some View {
+        Section(L10n.string("mem_gender")) {
+            Picker(L10n.string("mem_gender"), selection: $genderIndex) {
+                Text(L10n.string("mem_gender_secret")).tag(0)
+                Text(L10n.string("mem_gender_male")).tag(1)
+                Text(L10n.string("mem_gender_female")).tag(2)
+            }
+            .pickerStyle(.segmented)
+        }
+    }
+
+    private var formBirthdaySection: some View {
+        Section(L10n.string("mem_birthday")) {
+            Toggle(L10n.string("mem_birthday"), isOn: $hasBirthday)
+            if hasBirthday {
+                DatePicker(L10n.string("mem_birthday"), selection: $birthday,
+                           displayedComponents: .date)
+                    .datePickerStyle(.compact)
+            }
+        }
+    }
+
+    private var formReferrerSection: some View {
+        Section(L10n.string("mem_referrer")) {
+            Button {
+                showingReferrerPicker = true
+            } label: {
+                HStack {
+                    Text(referrerLabel)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+    }
+
+    private var formNoteSection: some View {
+        Section(L10n.string("mem_note")) {
+            TextField(L10n.string("mem_note"), text: $note)
         }
     }
 

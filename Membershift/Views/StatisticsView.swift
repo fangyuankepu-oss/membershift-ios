@@ -225,19 +225,9 @@ struct StatisticsView: View {
                     ForEach(data.daily.indices, id: \.self) { index in
                         let day = data.daily[index]
                         let showLabel = data.daily.count <= 14 || index % 5 == 0
-                        VStack(spacing: 2) {
-                            Text(day.amount > 0 ? "\(Int(day.amount.rounded()))" : "")
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                            Rectangle()
-                                .fill(Brand.deepGreen)
-                                .frame(width: CGFloat(max(4, 18 - data.daily.count / 4)),
-                                       height: max(3, day.amount / maxValue * 110))
-                            Text(showLabel ? day.label : "")
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                        }
-                        .frame(maxWidth: .infinity)
+                        chartBar(label: day.label, amount: day.amount,
+                                 maxValue: maxValue, showLabel: showLabel,
+                                 width: CGFloat(max(4, 18 - data.daily.count / 4)))
                     }
                 }
                 .frame(height: 150)
@@ -246,6 +236,24 @@ struct StatisticsView: View {
                     .foregroundColor(.secondary)
             }
         }
+    }
+
+    // One bar pulled out of the chart ForEach so the chart body stays
+    // a small expression (same failure class as MembersView, build #4).
+    private func chartBar(label: String, amount: Double, maxValue: Double,
+                          showLabel: Bool, width: CGFloat) -> some View {
+        VStack(spacing: 2) {
+            Text(amount > 0 ? "\(Int(amount.rounded()))" : "")
+                .font(.caption2)
+                .foregroundColor(.secondary)
+            Rectangle()
+                .fill(Brand.deepGreen)
+                .frame(width: width, height: max(3, amount / maxValue * 110))
+            Text(showLabel ? label : "")
+                .font(.caption2)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
     }
 
     private var hoursCard: some View {
@@ -331,22 +339,26 @@ struct StatisticsView: View {
                     }
                 }
             }
-            HStack {
-                Button(L10n.string("stats_prev")) {
-                    if dailyPage > 1 { dailyPage -= 1 }
-                }
-                .disabled(dailyPage <= 1)
-                Spacer()
-                Text(String(format: L10n.string("stats_page_fmt"), dailyPage, dailyTotalPages))
-                    .foregroundColor(.secondary)
-                Spacer()
-                Button(L10n.string("stats_next")) {
-                    if dailyPage < dailyTotalPages { dailyPage += 1 }
-                }
-                .disabled(dailyPage >= dailyTotalPages)
-            }
-            .padding(.top, 8)
+            dailyPager
         }
+    }
+
+    private var dailyPager: some View {
+        HStack {
+            Button(L10n.string("stats_prev")) {
+                if dailyPage > 1 { dailyPage -= 1 }
+            }
+            .disabled(dailyPage <= 1)
+            Spacer()
+            Text(String(format: L10n.string("stats_page_fmt"), dailyPage, dailyTotalPages))
+                .foregroundColor(.secondary)
+            Spacer()
+            Button(L10n.string("stats_next")) {
+                if dailyPage < dailyTotalPages { dailyPage += 1 }
+            }
+            .disabled(dailyPage >= dailyTotalPages)
+        }
+        .padding(.top, 8)
     }
 
     private var dailyHeader: some View {
