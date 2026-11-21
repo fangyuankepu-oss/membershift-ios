@@ -207,6 +207,18 @@ enum L10n {
             .zhHans: "%1$d 分",
             .en: "%1$d points",
         ],
+        "mem_balance_fmt": [
+            .zhHans: "余额 %@",
+            .en: "Balance %@",
+        ],
+        "mem_spent_fmt": [
+            .zhHans: "累计 %@",
+            .en: "Total spent %@",
+        ],
+        "bk_title": [
+            .zhHans: "预约",
+            .en: "Booking",
+        ],
         "tx_checkout": [
             .zhHans: "消费结算",
             .en: "Checkout",
@@ -812,6 +824,410 @@ enum L10n {
         "lic_wall_note": [
             .zhHans: "激活码验证尚未接入（第一阶段占位）。",
             .en: "Activation-code verification is not wired up yet (phase 1 placeholder).",
+        ],
+        "common_save": [
+            .zhHans: "保存",
+            .en: "Save",
+        ],
+        "tx_pts_unit": [
+            .zhHans: "分",
+            .en: "points",
+        ],
+        "err_need_member": [
+            .zhHans: "请先选择会员",
+            .en: "Please select a member first",
+        ],
+        "err_need_amount": [
+            .zhHans: "请输入有效金额",
+            .en: "Please enter a valid amount",
+        ],
+        "err_balance_not_enough": [
+            .zhHans: "储值余额不足",
+            .en: "Insufficient balance",
+        ],
+        "err_points_not_enough": [
+            .zhHans: "积分不足",
+            .en: "Not enough points",
+        ],
+        "tx_earn_detail": [
+            .zhHans: "消费 %@%@ 兑换积分",
+            .en: "Spent %@%@ to earn points",
+        ],
+        "tx_recharge_detail": [
+            .zhHans: "充值 %@%@，赠送 %@%@",
+            .en: "Topped up %@%@, bonus %@%@",
+        ],
+        "tx_deduct_detail": [
+            .zhHans: "储值扣减消费 %@%@ · +%d 分",
+            .en: "Balance payment %@%@ · +%d points",
+        ],
+        "tx_adjust_detail": [
+            .zhHans: "手动调整积分",
+            .en: "Manual points adjustment",
+        ],
+        "tx_referral_detail": [
+            .zhHans: "转介绍奖励：+%d 分",
+            .en: "Referral reward: +%d points",
+        ],
+        "tx_points_expire_detail": [
+            .zhHans: "积分过期：-%d 分",
+            .en: "Points expired: -%d points",
+        ],
+        "bk_day": [
+            .zhHans: "日",
+            .en: "Day",
+        ],
+        "bk_week": [
+            .zhHans: "周",
+            .en: "Week",
+        ],
+        "bk_month": [
+            .zhHans: "月",
+            .en: "Month",
+        ],
+        "bk_list": [
+            .zhHans: "列表",
+            .en: "List",
+        ],
+        "bk_today": [
+            .zhHans: "今天",
+            .en: "Today",
+        ],
+        "bk_new": [
+            .zhHans: "新建预约",
+            .en: "New Booking",
+        ],
+        "bk_member": [
+            .zhHans: "会员",
+            .en: "Member",
+        ],
+        "bk_staff": [
+            .zhHans: "员工",
+            .en: "Staff",
+        ],
+        "bk_no_staff": [
+            .zhHans: "未指派",
+            .en: "Unassigned",
+        ],
+        "bk_staff_custom": [
+            .zhHans: "＋ 其他员工…",
+            .en: "+ Other staff…",
+        ],
+        "bk_staff_custom_hint": [
+            .zhHans: "输入员工姓名",
+            .en: "Enter staff name",
+        ],
+        "bk_service": [
+            .zhHans: "服务",
+            .en: "Service",
+        ],
+        "bk_service_custom": [
+            .zhHans: "＋ 新增服务…",
+            .en: "+ New service…",
+        ],
+        "bk_service_custom_hint": [
+            .zhHans: "输入服务名称",
+            .en: "Enter service name",
+        ],
+        "bk_start": [
+            .zhHans: "开始时间",
+            .en: "Start Time",
+        ],
+        "bk_end": [
+            .zhHans: "结束时间",
+            .en: "End Time",
+        ],
+        "bk_note": [
+            .zhHans: "备注",
+            .en: "Note",
+        ],
+        "bk_status_pending": [
+            .zhHans: "待确认",
+            .en: "Pending",
+        ],
+        "bk_status_confirmed": [
+            .zhHans: "已确认",
+            .en: "Confirmed",
+        ],
+        "bk_status_completed": [
+            .zhHans: "已完成",
+            .en: "Completed",
+        ],
+        "bk_status_cancelled": [
+            .zhHans: "已取消",
+            .en: "Cancelled",
+        ],
+        "bk_status_noshow": [
+            .zhHans: "未到",
+            .en: "No-show",
+        ],
+        "bk_walkin": [
+            .zhHans: "散客",
+            .en: "Walk-in",
+        ],
+        "bk_conflict": [
+            .zhHans: "预约冲突",
+            .en: "Booking Conflict",
+        ],
+        "bk_conflict_fmt": [
+            .zhHans: "与以下预约时间冲突：\n%@",
+            .en: "Conflicts with the following bookings:\n%@",
+        ],
+        "bk_conflict_item_fmt": [
+            .zhHans: "%@ %@–%@（%@，%@）",
+            .en: "%@ %@–%@ (%@, %@)",
+        ],
+        "bk_delete_confirm": [
+            .zhHans: "确定删除这条预约吗？",
+            .en: "Delete this booking?",
+        ],
+        "bk_deleted": [
+            .zhHans: "预约已删除",
+            .en: "Booking deleted",
+        ],
+        "bk_saved": [
+            .zhHans: "预约已保存",
+            .en: "Booking saved",
+        ],
+        "bk_empty": [
+            .zhHans: "当天没有预约",
+            .en: "No bookings today",
+        ],
+        "bk_day_summary": [
+            .zhHans: "共 %d 个预约",
+            .en: "%d bookings today",
+        ],
+        "bk_tap_to_book": [
+            .zhHans: "＋ 点击预约",
+            .en: "+ Book",
+        ],
+        "bk_week_bookings": [
+            .zhHans: "%d 个预约",
+            .en: "%d bookings",
+        ],
+        "bk_week_free": [
+            .zhHans: "空闲",
+            .en: "Free",
+        ],
+        "bk_empty_upcoming": [
+            .zhHans: "暂无预约",
+            .en: "No bookings",
+        ],
+        "bk_bad_time": [
+            .zhHans: "结束时间必须晚于开始时间",
+            .en: "End time must be after start time",
+        ],
+        "bk_outside_hours": [
+            .zhHans: "预约时间须在营业时间内",
+            .en: "Booking must be within business hours",
+        ],
+        "bk_action_confirm": [
+            .zhHans: "确认预约",
+            .en: "Confirm Booking",
+        ],
+        "bk_action_complete": [
+            .zhHans: "标记完成",
+            .en: "Complete",
+        ],
+        "bk_action_cancel": [
+            .zhHans: "取消预约",
+            .en: "Cancel",
+        ],
+        "bk_action_noshow": [
+            .zhHans: "标记未到",
+            .en: "Mark as No-Show",
+        ],
+        "bk_action_edit": [
+            .zhHans: "编辑",
+            .en: "Edit",
+        ],
+        "bk_month_fmt": [
+            .zhHans: "%d年%d月",
+            .en: "%d-%d",
+        ],
+        "bk_week_fmt": [
+            .zhHans: "%@ 至 %@",
+            .en: "%@ to %@",
+        ],
+        "bk_plus_30": [
+            .zhHans: "+30分钟",
+            .en: "+30 min",
+        ],
+        "bk_wd_sun": [
+            .zhHans: "日",
+            .en: "Sun",
+        ],
+        "bk_wd_mon": [
+            .zhHans: "一",
+            .en: "Mon",
+        ],
+        "bk_wd_tue": [
+            .zhHans: "二",
+            .en: "Tue",
+        ],
+        "bk_wd_wed": [
+            .zhHans: "三",
+            .en: "Wed",
+        ],
+        "bk_wd_thu": [
+            .zhHans: "四",
+            .en: "Thu",
+        ],
+        "bk_wd_fri": [
+            .zhHans: "五",
+            .en: "Fri",
+        ],
+        "bk_wd_sat": [
+            .zhHans: "六",
+            .en: "Sat",
+        ],
+        "bk_hours_title": [
+            .zhHans: "营业时间",
+            .en: "Business Hours",
+        ],
+        "bk_hours_start": [
+            .zhHans: "开始时间",
+            .en: "Opens",
+        ],
+        "bk_hours_end": [
+            .zhHans: "结束时间",
+            .en: "Closes",
+        ],
+        "bk_hours_next_day": [
+            .zhHans: "结束为次日",
+            .en: "Closes next day",
+        ],
+        "bk_hours_next_day_short": [
+            .zhHans: "次日",
+            .en: "next day",
+        ],
+        "bk_hours_edit": [
+            .zhHans: "修改",
+            .en: "Edit",
+        ],
+        "bk_hours_invalid": [
+            .zhHans: "营业时间设置无效",
+            .en: "Invalid business hours",
+        ],
+        "rc_mode_topup": [
+            .zhHans: "充值",
+            .en: "Top Up",
+        ],
+        "rc_mode_deduct": [
+            .zhHans: "充值扣减",
+            .en: "Deduct",
+        ],
+        "rc_mode_adjust": [
+            .zhHans: "积分调整",
+            .en: "Adjust",
+        ],
+        "rc_earn_title": [
+            .zhHans: "消费兑换积分",
+            .en: "Earn Points",
+        ],
+        "rc_earn_amount": [
+            .zhHans: "消费金额",
+            .en: "Amount",
+        ],
+        "rc_earn_preview": [
+            .zhHans: "消费 %@，可得 %d 积分（等级倍率 ×%@）",
+            .en: "Spend %@, earn %d points (tier multiplier ×%@)",
+        ],
+        "rc_earn_preview_none": [
+            .zhHans: "请先选择会员",
+            .en: "Please select a member first",
+        ],
+        "rc_earn_btn": [
+            .zhHans: "兑换积分",
+            .en: "Earn Points",
+        ],
+        "rc_earn_ok": [
+            .zhHans: "已兑换 +%d 分",
+            .en: "Earned +%d points",
+        ],
+        "rc_recharge_title": [
+            .zhHans: "储值充值",
+            .en: "Top Up Balance",
+        ],
+        "rc_recharge_amount": [
+            .zhHans: "充值金额",
+            .en: "Top-up amount",
+        ],
+        "rc_bonus_reach": [
+            .zhHans: "充 %@ 赠 %@，到账 %@",
+            .en: "Top up %@, get %@ free — total %@",
+        ],
+        "rc_bonus_next": [
+            .zhHans: "再充到 %@ 可多送",
+            .en: "Top up to %@ to get more free",
+        ],
+        "rc_bonus_none": [
+            .zhHans: "当前无赠送档位",
+            .en: "No bonus tier available",
+        ],
+        "rc_recharge_btn": [
+            .zhHans: "充值",
+            .en: "Top Up",
+        ],
+        "rc_recharge_ok": [
+            .zhHans: "已充值，到账 %@",
+            .en: "Topped up — total %@",
+        ],
+        "rc_deduct_amount": [
+            .zhHans: "消费金额",
+            .en: "Amount",
+        ],
+        "rc_deduct_preview_fmt": [
+            .zhHans: "扣减后余额 %@ · 本次可得 +%d 分",
+            .en: "Balance after: %@ · Points earned +%d",
+        ],
+        "rc_deduct_btn": [
+            .zhHans: "扣减",
+            .en: "Deduct",
+        ],
+        "rc_deduct_ok": [
+            .zhHans: "已扣减 %@",
+            .en: "Deducted %@",
+        ],
+        "rc_adjust_title": [
+            .zhHans: "手动调整积分",
+            .en: "Adjust Points",
+        ],
+        "rc_adjust_points": [
+            .zhHans: "积分增减（+100 / -50）",
+            .en: "Points (+100 / -50)",
+        ],
+        "rc_adjust_reason": [
+            .zhHans: "调整原因（可选）",
+            .en: "Reason (optional)",
+        ],
+        "rc_adjust_btn": [
+            .zhHans: "调整积分",
+            .en: "Adjust",
+        ],
+        "rc_adjust_ok": [
+            .zhHans: "已调整",
+            .en: "Adjusted",
+        ],
+        "rc_adjust_admin_only": [
+            .zhHans: "仅店长可调整积分",
+            .en: "Only managers can adjust points",
+        ],
+        "rc_adjust_error_negative": [
+            .zhHans: "调整后积分不能为负",
+            .en: "Points cannot go below zero",
+        ],
+        "rc_pin_title": [
+            .zhHans: "请输入 %@ 的会员密码",
+            .en: "Enter %@'s member PIN",
+        ],
+        "rc_pin_wrong": [
+            .zhHans: "密码错误，请重试",
+            .en: "Wrong PIN, please try again",
+        ],
+        "rc_pin_no_pin_tip": [
+            .zhHans: "该会员未设置密码，建议在会员资料里设置",
+            .en: "This member has no PIN set — consider setting one in their profile",
         ],
     ]
 }

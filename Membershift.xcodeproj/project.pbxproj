@@ -16,6 +16,9 @@
 		8F2F95FF8D9216EC27115FD1 /* License.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A90D3D4FBDE2D5D4D712310 /* License.swift */; };
 		985E42AD0E58860A2891FA66 /* PlaceholderPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2520C3F8D6E70B3915F95A87 /* PlaceholderPage.swift */; };
 		00BBE026FA2526456DCB3B03 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699CC267D821C86DAF575E59 /* StatisticsView.swift */; };
+		59938B12E72DD830BCFCD0CE /* BookingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A960E547CB77BFD762F9004 /* BookingView.swift */; };
+		CED64E4BA249128AF40054DC /* RechargeDeductView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1CC63B4DF091217E262E881 /* RechargeDeductView.swift */; };
+		C066F80B727A4B6B30E5843B /* PointsEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD8B62B48716F92A36A78E9 /* PointsEngine.swift */; };
 		A5560E55DD72B498304D11A7 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ECB7BD06D2968FEBCCB0F73 /* MainTabView.swift */; };
 		2C588DB0D03A877108D2FFB8 /* MembersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D723AA2FC35B0FE277A29C /* MembersView.swift */; };
 		A64D14D4DB885669BC5FD248 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48358BB9D30E01E0D87B1D4A /* Auth.swift */; };
@@ -35,6 +38,9 @@
 		17C6A70AA5A82E034FA2B4D3 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		2520C3F8D6E70B3915F95A87 /* PlaceholderPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderPage.swift; sourceTree = "<group>"; };
 		699CC267D821C86DAF575E59 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
+		8A960E547CB77BFD762F9004 /* BookingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookingView.swift; sourceTree = "<group>"; };
+		F1CC63B4DF091217E262E881 /* RechargeDeductView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RechargeDeductView.swift; sourceTree = "<group>"; };
+		FAD8B62B48716F92A36A78E9 /* PointsEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointsEngine.swift; sourceTree = "<group>"; };
 		30AC3C5C6C418C791E362178 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		48358BB9D30E01E0D87B1D4A /* Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
 		6ECB7BD06D2968FEBCCB0F73 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
@@ -67,16 +73,19 @@
 			D57B674A3219579F19D9AD26 /* DemoData.swift */,
 			9A90D3D4FBDE2D5D4D712310 /* License.swift */,
 			E49A401D16578CB2AC08E295 /* Localization.swift */,
+			FAD8B62B48716F92A36A78E9 /* PointsEngine.swift */,
 			8B759C5A8E8895B528E1471F /* Theme.swift */,
 		); path = Core; sourceTree = "<group>"; };
 		38DF21AEF4612506D6BE5CBE /* Views */ = {isa = PBXGroup; children = (
 			17C6A70AA5A82E034FA2B4D3 /* AppState.swift */,
+			8A960E547CB77BFD762F9004 /* BookingView.swift */,
 			31B463490D7DD6FCFE142146 /* DashboardView.swift */,
 			D69891ED1A19100E9A9F54A7 /* LicenseWallView.swift */,
 			0F7BD916E315F0435BC65708 /* LoginView.swift */,
 			6ECB7BD06D2968FEBCCB0F73 /* MainTabView.swift */,
 			E4D723AA2FC35B0FE277A29C /* MembersView.swift */,
 			2520C3F8D6E70B3915F95A87 /* PlaceholderPage.swift */,
+			F1CC63B4DF091217E262E881 /* RechargeDeductView.swift */,
 			699CC267D821C86DAF575E59 /* StatisticsView.swift */,
 		); path = Views; sourceTree = "<group>"; };
 		518DA81DB9B99529C0C0AEBE = {isa = PBXGroup; children = (
@@ -127,14 +136,17 @@
 			D74216E76623787B14DC3EC5 /* DemoData.swift in Sources */,
 			8F2F95FF8D9216EC27115FD1 /* License.swift in Sources */,
 			407ABFE02E4DE6D88E0A7C60 /* Localization.swift in Sources */,
+			C066F80B727A4B6B30E5843B /* PointsEngine.swift in Sources */,
 			ED3A0686984A0397FD21BF02 /* Theme.swift in Sources */,
 			B1B8F05D5C6EBFD103483484 /* AppState.swift in Sources */,
+			59938B12E72DD830BCFCD0CE /* BookingView.swift in Sources */,
 			F2C44ABC061A20AAB24484D7 /* DashboardView.swift in Sources */,
 			CDB197340A3DABD209F426FD /* LicenseWallView.swift in Sources */,
 			CE5F86D665104A374DDBED98 /* LoginView.swift in Sources */,
 			A5560E55DD72B498304D11A7 /* MainTabView.swift in Sources */,
 			2C588DB0D03A877108D2FFB8 /* MembersView.swift in Sources */,
 			985E42AD0E58860A2891FA66 /* PlaceholderPage.swift in Sources */,
+			CED64E4BA249128AF40054DC /* RechargeDeductView.swift in Sources */,
 			00BBE026FA2526456DCB3B03 /* StatisticsView.swift in Sources */,
 		); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXSourcesBuildPhase section */

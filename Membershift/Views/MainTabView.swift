@@ -33,8 +33,12 @@ struct MainTabView: View {
             tabPage(titleKey: "nav_members", icon: "person.2.fill") {
                 MembersView()
             }
-            tabPage(titleKey: "nav_booking", icon: "calendar", page: "booking")
-            tabPage(titleKey: "nav_recharge", icon: "arrow.left.arrow.right", page: "recharge")
+            tabPage(titleKey: "nav_booking", icon: "calendar") {
+                BookingView()
+            }
+            tabPage(titleKey: "nav_recharge", icon: "arrow.left.arrow.right") {
+                RechargeDeductView()
+            }
             tabPage(titleKey: "nav_gifts", icon: "gift.fill", page: "gifts")
             tabPage(titleKey: "nav_coupons", icon: "ticket.fill", page: "coupons")
             tabPage(titleKey: "nav_transactions", icon: "list.bullet.rectangle", page: "transactions")
