@@ -27,8 +27,12 @@ struct MainTabView: View {
                     }
             }
             .tabItem { Label(L10n.string("nav_dashboard"), systemImage: "square.grid.2x2") }
-            tabPage(titleKey: "nav_stats", icon: "chart.bar.fill", page: "statistics")
-            tabPage(titleKey: "nav_members", icon: "person.2.fill", page: "members")
+            tabPage(titleKey: "nav_stats", icon: "chart.bar.fill") {
+                StatisticsView()
+            }
+            tabPage(titleKey: "nav_members", icon: "person.2.fill") {
+                MembersView()
+            }
             tabPage(titleKey: "nav_booking", icon: "calendar", page: "booking")
             tabPage(titleKey: "nav_recharge", icon: "arrow.left.arrow.right", page: "recharge")
             tabPage(titleKey: "nav_gifts", icon: "gift.fill", page: "gifts")
@@ -37,6 +41,20 @@ struct MainTabView: View {
             tabPage(titleKey: "nav_settings", icon: "gearshape.fill", page: "settings")
         }
         .tint(Brand.deepGreen)
+    }
+
+    private func tabPage<Content: View>(titleKey: String, icon: String,
+                                        @ViewBuilder content: () -> Content) -> some View {
+        NavigationStack {
+            content()
+                .navigationTitle(L10n.string(titleKey))
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button(L10n.string("logout")) { appState.logout() }
+                    }
+                }
+        }
+        .tabItem { Label(L10n.string(titleKey), systemImage: icon) }
     }
 
     private func tabPage(titleKey: String, icon: String, page: String) -> some View {

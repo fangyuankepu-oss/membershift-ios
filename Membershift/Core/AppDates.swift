@@ -50,6 +50,53 @@ enum AppDates {
         return formatter(dayFormat).string(from: first)
     }
 
+    /// Monday of the current week (Monday is the week start),
+    /// like Android `DateUtils.weekStart`.
+    static func weekStart() -> String {
+        let calendar = Calendar.current
+        let weekday = calendar.component(.weekday, from: Date())
+        // Calendar weekday: 1 = Sunday … 7 = Saturday.
+        // Monday start: Sunday goes back 6 days, other days back (weekday - 2).
+        let delta = weekday == 1 ? -6 : -(weekday - 2)
+        let monday = calendar.date(byAdding: .day, value: delta, to: Date()) ?? Date()
+        return formatter(dayFormat).string(from: monday)
+    }
+
+    /// "yyyy-MM-dd" for a Date.
+    static func dayString(_ date: Date) -> String {
+        formatter(dayFormat).string(from: date)
+    }
+
+    /// Days between two "yyyy-MM-dd" dates (b - a), like Android
+    /// `DateUtils.daysBetween`.
+    static func daysBetween(_ a: String, _ b: String) -> Int {
+        guard let da = parseDay(a), let db = parseDay(b) else { return 0 }
+        return Int(db.timeIntervalSince(da) / 86400)
+    }
+
+    /// Every day in the closed range [start, end], like Android
+    /// `DateUtils.daysInRange` (truncated at 370 days).
+    static func daysInRange(_ start: String, _ end: String) -> [String] {
+        guard let ds = parseDay(start), let de = parseDay(end), ds <= de else { return [] }
+        var out: [String] = []
+        var current = ds
+        var guardCount = 0
+        while current <= de && guardCount < 370 {
+            out.append(formatter(dayFormat).string(from: current))
+            guard let next = Calendar.current.date(byAdding: .day, value: 1, to: current) else { break }
+            current = next
+            guardCount += 1
+        }
+        return out
+    }
+
+    /// The previous equal-length range, like Android
+    /// `DateUtils.prevRange`: [start - len, end - len].
+    static func prevRange(_ start: String, _ end: String) -> (String, String) {
+        let len = daysBetween(start, end) + 1
+        return (addDays(start, -len), addDays(end, -len))
+    }
+
     /// Earn date + `months` validity; `months <= 0` means never expires.
     static func expiryDate(earnDate: String, months: Int) -> String {
         guard months > 0 else { return "" }
