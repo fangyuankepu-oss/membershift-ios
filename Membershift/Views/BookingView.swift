@@ -880,10 +880,10 @@ struct BookingView: View {
 
     private var conflictText: String {
         conflicts.map { conflict in
-            let staff = $0.staff.isEmpty ? L10n.string("bk_no_staff") : $0.staff
+            let staff = conflict.staff.isEmpty ? L10n.string("bk_no_staff") : conflict.staff
             return String(format: L10n.string("bk_conflict_item_fmt"),
-                          datePart($0.startTime), timePart($0.startTime),
-                          timePart($0.endTime), staff, statusText($0.status))
+                          datePart(conflict.startTime), timePart(conflict.startTime),
+                          timePart(conflict.endTime), staff, statusText(conflict.status))
         }.joined(separator: "\n")
     }
 
