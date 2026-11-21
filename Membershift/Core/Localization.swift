@@ -60,8 +60,12 @@ enum L10n {
             .en: "Wrong username or password",
         ],
         "login_hint": [
-            .zhHans: "默认账号 admin / 123456，登录后请在设置中修改",
-            .en: "Default account admin / 123456 — please change it in Settings after logging in",
+            .zhHans: "默认账号 admin / 123456",
+            .en: "Default account admin / 123456",
+        ],
+        "login_hint2": [
+            .zhHans: "登录后请在设置中修改密码",
+            .en: "Please change the password in Settings after logging in",
         ],
         "login_language": [
             .zhHans: "语言",

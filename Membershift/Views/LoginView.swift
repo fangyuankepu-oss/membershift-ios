@@ -15,7 +15,8 @@ struct LoginView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 20) {
+            ScrollView {
+                VStack(spacing: 20) {
                 // Logo: deep-green rounded square with a white M
                 // (matches the Membershift logo: filled green square,
                 // hollow white M cut-out).
@@ -55,10 +56,16 @@ struct LoginView: View {
                     .tint(Brand.deepGreen)
                     .disabled(username.isEmpty || password.isEmpty)
 
-                Text(L10n.string("login_hint"))
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
+                VStack(spacing: 4) {
+                    Text(L10n.string("login_hint"))
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                    Text(L10n.string("login_hint2"))
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                }
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
 
                 Picker(L10n.string("login_language"), selection: $selectedLanguage) {
                     ForEach(AppLanguage.allCases, id: \.self) { lang in
@@ -70,9 +77,10 @@ struct LoginView: View {
                     appState.language = newValue
                 }
 
-                Spacer()
+                }
+                .padding(24)
             }
-            .padding(24)
+            .scrollDismissesKeyboard(.interactively)
             .toolbar(.hidden, for: .navigationBar)
         }
     }
