@@ -309,7 +309,7 @@ enum BusinessHours {
     }
 }
 
-private enum BookingFormTarget: Identifiable {
+fileprivate enum BookingFormTarget: Identifiable {
     case newBooking(start: String)
     case edit(BookingRow)
 
@@ -354,7 +354,8 @@ struct BookingView: View {
             // Lock the page width to the screen (build #5 lesson: an
             // oversize child can stretch the page past the edges and
             // swallow the padding on a 390pt screen).
-            .containerRelativeFrame(.horizontal)
+            // (containerRelativeFrame needs iOS 17; this app targets iOS 16.)
+            .frame(width: UIScreen.main.bounds.width)
         }
         .background(Color(.systemGroupedBackground))
         .onAppear { reload() }

@@ -53,7 +53,8 @@ struct RechargeDeductView: View {
             }
             .padding(16)
             // Lock the page width to the screen (build #5 lesson).
-            .containerRelativeFrame(.horizontal)
+            // (containerRelativeFrame needs iOS 17; this app targets iOS 16.)
+            .frame(width: UIScreen.main.bounds.width)
         }
         .background(Color(.systemGroupedBackground))
         .onAppear {

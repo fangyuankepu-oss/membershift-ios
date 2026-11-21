@@ -61,8 +61,9 @@ struct StatisticsView: View {
             // Lock the page width to the screen: the daily table below
             // is wider than its card, and without this it stretches
             // the whole page past the screen edges (swallowing the
-            // padding) on a 390pt screen.
-            .containerRelativeFrame(.horizontal)
+            // padding) on a 390pt screen. (containerRelativeFrame
+            // needs iOS 17; this app targets iOS 16.)
+            .frame(width: UIScreen.main.bounds.width)
         }
         .background(Color(.systemGroupedBackground))
         .onAppear { reload() }
