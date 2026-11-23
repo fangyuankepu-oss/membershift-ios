@@ -198,7 +198,7 @@ final class Database {
     /// Fresh-install defaults, ported from Android DbHelper.seedDefaults.
     /// Aligned values (same as Android native / desktop / poster rules):
     /// redeem_rate=20 (20 pts = $1), referral_points=50 per side,
-    /// min_redeem_points=100, points_expiry_months=12, trial 14 days.
+    /// min_redeem_points=100, points_expiry_months=12, trial 90 days.
     private func seedIfNeeded() -> Bool {
         let count = scalarInt("SELECT COUNT(*) FROM users") ?? -1
         guard count == 0 else { return count >= 0 }

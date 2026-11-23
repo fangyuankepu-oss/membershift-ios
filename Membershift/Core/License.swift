@@ -1,7 +1,7 @@
 import Foundation
 
 /// Trial / activation status, aligned with the Android native app:
-/// 14-day trial from `license.installed_at` (first-install date).
+/// 3-month (90-day) trial from `license.installed_at` (first-install date).
 enum LicenseStatus: Equatable {
     /// Trial running, with days left (0 = last day).
     case trial(daysLeft: Int)
@@ -29,7 +29,7 @@ protocol LicenseVerifying {
 }
 
 struct StubLicenseVerifier: LicenseVerifying {
-    static let trialDays = 14
+    static let trialDays = 90
 
     func status(db: Database) -> LicenseStatus {
         let code = db.licenseValue("code", default: "")
